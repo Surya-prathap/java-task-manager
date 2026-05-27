@@ -2,6 +2,7 @@ package com.project.task_manager.controller;
 
 import com.project.task_manager.entity.Task;
 import com.project.task_manager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping
-    public Task createTask(@RequestBody Task task){
+    public Task createTask(@Valid @RequestBody Task task){
        return taskService.addTask(task);
     }
 
@@ -30,7 +31,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Integer id, @RequestBody Task updatedTask){
+    public Task updateTask(@PathVariable Integer id,@Valid @RequestBody Task updatedTask){
         return taskService.updateTask(id,updatedTask);
     }
 
