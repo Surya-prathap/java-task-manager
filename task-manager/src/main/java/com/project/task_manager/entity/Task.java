@@ -13,10 +13,7 @@ import java.time.LocalDate;
 
 
 @Entity
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Task {
