@@ -1,4 +1,4 @@
-package com.project.task_manager.dto;
+package com.project.task_manager.dto.taskDtos;
 
 import lombok.Data;
 
@@ -8,5 +8,4 @@ public class TaskResponseDTO {
     private String title;
     private String description;
     private boolean status;
-
 }

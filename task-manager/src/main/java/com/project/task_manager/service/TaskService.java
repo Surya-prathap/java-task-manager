@@ -1,7 +1,7 @@
 package com.project.task_manager.service;
 
-import com.project.task_manager.dto.TaskRequestDTO;
-import com.project.task_manager.dto.TaskResponseDTO;
+import com.project.task_manager.dto.taskDtos.TaskRequestDTO;
+import com.project.task_manager.dto.taskDtos.TaskResponseDTO;
 import com.project.task_manager.entity.Task;
 import com.project.task_manager.exceptions.TaskNotFoundException;
 import com.project.task_manager.repository.TaskRepository;

@@ -1,7 +1,7 @@
 package com.project.task_manager.controller;
 
-import com.project.task_manager.dto.TaskRequestDTO;
-import com.project.task_manager.dto.TaskResponseDTO;
+import com.project.task_manager.dto.taskDtos.TaskRequestDTO;
+import com.project.task_manager.dto.taskDtos.TaskResponseDTO;
 import com.project.task_manager.response.ApiResponse;
 import com.project.task_manager.service.TaskService;
 import jakarta.validation.Valid;
