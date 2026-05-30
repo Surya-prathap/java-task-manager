@@ -3,9 +3,15 @@ package com.project.task_manager.service;
 import com.project.task_manager.dto.taskDtos.TaskRequestDTO;
 import com.project.task_manager.dto.taskDtos.TaskResponseDTO;
 import com.project.task_manager.entity.Task;
+import com.project.task_manager.entity.User;
 import com.project.task_manager.exceptions.TaskNotFoundException;
+import com.project.task_manager.exceptions.UnauthorizedException;
+import com.project.task_manager.exceptions.UserNotFoundException;
 import com.project.task_manager.repository.TaskRepository;
+import com.project.task_manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,13 +23,21 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public TaskResponseDTO addTask(TaskRequestDTO dto)
     {
+        String email = getCurrentUserEmail();
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Task task = new Task();
         task.setTitle(dto.getTitle());
         task.setDescription(dto.getDescription());
         task.setStatus(dto.isStatus());
         task.setDueDate(dto.getDueDate());
+
+        task.setUser(user);
 
         Task savedTask = taskRepository.save(task);
 
@@ -51,7 +65,13 @@ public class TaskService {
     }
 
     public TaskResponseDTO getTaskById(Integer id){
+        String email = getCurrentUserEmail();
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        if (!task.getUser().getId().equals(user.getId())){
+            throw new UnauthorizedException("You are not authorized to get this task");
+        }
         TaskResponseDTO responseDTO = new TaskResponseDTO();
         responseDTO.setId(task.getId());
         responseDTO.setTitle(task.getTitle());
@@ -62,10 +82,17 @@ public class TaskService {
     }
 
     public TaskResponseDTO updateTask(Integer id,TaskRequestDTO dto){
+        String email = getCurrentUserEmail();
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Task existingTask = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        if(!existingTask.getUser().getId().equals(user.getId())){
+            throw new UnauthorizedException("You are not authorized to update this task");
+        }
         existingTask.setTitle(dto.getTitle());
         existingTask.setDescription(dto.getDescription());
         existingTask.setStatus(dto.isStatus());
+
         Task updatedTask = taskRepository.save(existingTask);
 
         TaskResponseDTO responseDTO = new TaskResponseDTO();
@@ -76,6 +103,36 @@ public class TaskService {
     }
 
     public void deleteTask(Integer id){
-        taskRepository.deleteById(id);
+        String email = getCurrentUserEmail();
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        if (!task.getUser().getId().equals(user.getId())){
+            throw new UnauthorizedException("You are not authorized to delete this task");
+        }
+        taskRepository.delete(task);
+    }
+
+    private String getCurrentUserEmail(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        return user.getEmail();
+    }
+
+    public List<TaskResponseDTO> getMyTasks(){
+        String email = getCurrentUserEmail();
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        List<Task> tasks = taskRepository.findByUser(user);
+
+        List<TaskResponseDTO> taskResponseDTOList = new ArrayList<>();
+
+        for(Task task : tasks){
+            TaskResponseDTO dto = new TaskResponseDTO();
+            dto.setId(task.getId());
+            dto.setTitle(task.getTitle());
+            dto.setDescription(task.getDescription());
+            dto.setStatus(task.isStatus());
+            taskResponseDTOList.add(dto);
+        }
+        return taskResponseDTOList;
     }
 }

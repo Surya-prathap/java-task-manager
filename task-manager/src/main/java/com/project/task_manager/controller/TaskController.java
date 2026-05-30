@@ -52,4 +52,11 @@ public class TaskController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @GetMapping("/my-tasks")
+    public ResponseEntity<ApiResponse<List<TaskResponseDTO>>> getMyTasks(){
+        List<TaskResponseDTO> tasks = taskService.getMyTasks();
+        ApiResponse<List<TaskResponseDTO>> response = new ApiResponse<>("Your Tasks",tasks);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
 }
