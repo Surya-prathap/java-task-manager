@@ -46,6 +46,7 @@ public class TaskService {
         responseDTO.setTitle(savedTask.getTitle());
         responseDTO.setDescription(savedTask.getDescription());
         responseDTO.setStatus(savedTask.isStatus());
+        responseDTO.setDueDate(savedTask.getDueDate());
 
         return responseDTO;
     }
@@ -59,6 +60,7 @@ public class TaskService {
             responseDTO.setTitle(task.getTitle());
             responseDTO.setDescription(task.getDescription());
             responseDTO.setStatus(task.isStatus());
+            responseDTO.setDueDate(task.getDueDate());
             responseDTOList.add(responseDTO);
         }
         return responseDTOList;
@@ -77,6 +79,7 @@ public class TaskService {
         responseDTO.setTitle(task.getTitle());
         responseDTO.setDescription(task.getDescription());
         responseDTO.setStatus(task.isStatus());
+        responseDTO.setDueDate(task.getDueDate());
 
         return responseDTO;
     }
@@ -92,6 +95,7 @@ public class TaskService {
         existingTask.setTitle(dto.getTitle());
         existingTask.setDescription(dto.getDescription());
         existingTask.setStatus(dto.isStatus());
+        existingTask.setDueDate(dto.getDueDate());
 
         Task updatedTask = taskRepository.save(existingTask);
 
@@ -99,6 +103,7 @@ public class TaskService {
         responseDTO.setTitle(updatedTask.getTitle());
         responseDTO.setDescription(updatedTask.getDescription());
         responseDTO.setStatus(updatedTask.isStatus());
+        responseDTO.setDueDate(updatedTask.getDueDate());
         return responseDTO;
     }
 
@@ -114,7 +119,10 @@ public class TaskService {
 
     private String getCurrentUserEmail(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+        User user = null;
+        if (authentication != null) {
+            user = (User) authentication.getPrincipal();
+        }
         return user.getEmail();
     }
 
@@ -131,6 +139,7 @@ public class TaskService {
             dto.setTitle(task.getTitle());
             dto.setDescription(task.getDescription());
             dto.setStatus(task.isStatus());
+            dto.setDueDate(task.getDueDate());
             taskResponseDTOList.add(dto);
         }
         return taskResponseDTOList;
